@@ -3,36 +3,30 @@ from dataclasses import dataclass
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-#taxa de homi: id 20
-#homi: id 328
-
-base_url:str = "https://www.ipea.gov.br/atlasviolencia/"
-fontes:str = "api/v1/fontes"
-unidades:str = "api/v1/unidades"
-indicadores:str = "api/v1/indicadores"
-temas:str = "api/v1/temas"
-series:str = "api/v1/valores-series/20/4" #url para taxa de homicídios por município
-series_por_tema:str = "api/v1/series/0"
-path = base_url + series
-
-response = requests.get(path)
-if response.status_code != 200:
-      raise RuntimeError(f"Falha na request, erro: {response.status_code}")
-response.encoding = 'utf-8'
-response_text = response.json()
-
+#taxa de homi: id 20 (id para os dados na API)
+#num homi: id 328
 
 @dataclass
 class DataPoint():
+   """
+   o decorator dataclass gera automaticamente métodos padrões (__init__ entre outros) para a classe e indicada que a
+   classe tem o propósito principal de armazenar dados de forma estruturada. Essa classe representa os dados sobre a taxa de homicídio em um município
+   com todos os campos que serão necessários para transformar ele em um dataframe para análises nos dados.
+   """
    valor:float
    ano:int
    cod_munic:int
    uf:str
 
-df = pd.read_csv(os.path.join("info_municipios_ibge.csv"),usecols=["nome_uf","codigo_municipio"])
-df.set_index('codigo_municipio', inplace=True)
-df.index = df.index.astype(int)
-
+def get_api_response()->list[dict]:
+   BASE_URL:str = "https://www.ipea.gov.br/atlasviolencia/"
+   SERIES_URL = "api/v1/valores-series/328/4" #20 é o id do tema de taxa de homicídios e 4 é a abrangencia dos dados para cada município
+   path = BASE_URL + SERIES_URL
+   response = requests.get(path)
+   if response.status_code != 200:
+         raise RuntimeError(f"Falha na request, erro: {response.status_code}")
+   response.encoding = 'utf-8'
+   return response.json()
 
 def get_state_from_city_code(df:pd.DataFrame,city_code:int)->str:
    try:
@@ -52,23 +46,7 @@ def parse_api_results(api_response:list[dict], city_info_df:pd.DataFrame)->list[
    )
    return list(map(dict_to_datapoint,api_response))
 
-
-data_points = parse_api_results(response_text,df)
-final_df = pd.DataFrame(data_points)
-final_df =final_df.drop(["cod_munic"],axis="columns")
-analysis_years = [2000,2010,2019]
-final_df = final_df[ final_df["ano"].apply(lambda x: x in analysis_years)]
-print(final_df.head())
-
-
-group_by_state_and_year = final_df.groupby(["uf","ano"])
-avg_homicide_rate_per_state_and_years = group_by_state_and_year.aggregate(func="mean")
-
-print(avg_homicide_rate_per_state_and_years.info())
-print(avg_homicide_rate_per_state_and_years.head())
-
 def plot_graphs_by_year(df:pd.DataFrame)->None:
-
    df_reset = df.reset_index() #reset no index para plotar os gráficos
    df_pivot = df_reset.pivot(index='ano', columns='uf', values='valor')
    colors = plt.colormaps.get_cmap('tab20')
@@ -83,14 +61,59 @@ def plot_graphs_by_year(df:pd.DataFrame)->None:
          ax.bar(bar_positions[i], df_pivot.loc[year, state], width=bar_width, label=state, color=colors(i))
 
       ax.set_xlabel('Estado') #cria o gráfico
-      ax.set_ylabel('Valor')
-      ax.set_title(f'Valores por Estado no ano: {year}')
+      ax.set_ylabel('Taxa de Homicídio')
+      ax.set_title(f'Taxa de Homicídio por Estado no ano: {year}')
       ax.set_xticks(bar_positions)
       ax.set_xticklabels(df_pivot.columns, rotation=90)
       ax.legend(title='UF', bbox_to_anchor=(1.05, 1), loc='upper left')
 
       #salva o gráfico num arquivo
-      plt.savefig(f'estado_valores_plot_{year}.png', bbox_inches='tight')
+      plt.savefig(f'taxa_homi_estados_grafico_{year}.png', bbox_inches='tight')
       plt.close()
 
-plot_graphs_by_year(avg_homicide_rate_per_state_and_years)
+def get_grouped_dataframe(list_of_years:list[int])->pd.DataFrame:
+   df = pd.read_csv(os.path.join("info_municipios_ibge.csv"),usecols=["nome_uf","codigo_municipio"])
+   df.set_index('codigo_municipio', inplace=True)
+   df.index = df.index.astype(int)
+
+   api_response = get_api_response()
+   data_points = parse_api_results(api_response,df)
+   final_df = pd.DataFrame(data_points)
+   final_df =final_df.drop(["cod_munic"],axis="columns")
+   final_df = final_df[ final_df["ano"].apply(lambda x: x in list_of_years)]
+
+   group_by_state_and_year = final_df.groupby(["uf","ano"])
+   return group_by_state_and_year.mean()
+ 
+def get_years_from_user()->list[int]:
+   print("Olá, este programa utiliza a API do IPEA para buscar dados sobre a série histórica de taxa de homicídios em estados brasileiros \n")
+   OLDEST_YEAR_IN_SERIES: int = 1989
+   MOST_RECENT_YEAR_IN_SERIES:int = 2022
+   while True:
+      anos:str = input("Digite os anos dos dados que serão analizados, cada um com espaço: ")
+      years:list[str] = anos.split(" ")
+
+      if not years:
+         print("Nenhum ano foi digitado\n")
+         continue
+      try:
+         years_list:list[int] = list(map(lambda x: int(x),years))
+         if any([x < OLDEST_YEAR_IN_SERIES for x in years_list] ):
+            print("Ano mais antigo na série histórica é 1989, digite um ano igual o mais recente\n")
+            continue
+
+         if any([x > MOST_RECENT_YEAR_IN_SERIES for x in years_list] ):
+            print("Ano mais recente na série histórica é 2022, digite um ano igual o mais antigo\n")
+            continue
+
+         print("Numeros colocados com sucesso!")
+         return years_list
+      except:
+         continue
+
+if __name__ == "__main__":
+   years_list:list[int] = get_years_from_user()
+   avg_homicide_rate_per_state_and_years = get_grouped_dataframe(years_list)
+   print("Gerando gráficos")
+   plot_graphs_by_year(avg_homicide_rate_per_state_and_years)
+   print("Gráficos gerados com sucesso")
