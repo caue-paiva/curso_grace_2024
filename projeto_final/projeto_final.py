@@ -21,12 +21,6 @@ if response.status_code != 200:
 response.encoding = 'utf-8'
 response_text = response.json()
 
-periods = {}
-for dict_ in response_text:
-   periods[dict_["periodo"]] = ""
-
-print(periods.keys())
-print(len(periods))
 
 @dataclass
 class DataPoint():
@@ -62,7 +56,7 @@ def parse_api_results(api_response:list[dict], city_info_df:pd.DataFrame)->list[
 data_points = parse_api_results(response_text,df)
 final_df = pd.DataFrame(data_points)
 final_df =final_df.drop(["cod_munic"],axis="columns")
-analysis_years = [2000,2010]
+analysis_years = [2000,2010,2019]
 final_df = final_df[ final_df["ano"].apply(lambda x: x in analysis_years)]
 print(final_df.head())
 
@@ -73,33 +67,30 @@ avg_homicide_rate_per_state_and_years = group_by_state_and_year.aggregate(func="
 print(avg_homicide_rate_per_state_and_years.info())
 print(avg_homicide_rate_per_state_and_years.head())
 
+def plot_graphs_by_year(df:pd.DataFrame)->None:
 
+   df_reset = df.reset_index() #reset no index para plotar os gráficos
+   df_pivot = df_reset.pivot(index='ano', columns='uf', values='valor')
+   colors = plt.colormaps.get_cmap('tab20')
 
-# Reset index to plot using Matplotlib
-df_reset = avg_homicide_rate_per_state_and_years.reset_index()
+   for year in df_pivot.index: #loop por todos os anos dos dados
+      fig, ax = plt.subplots(figsize=(14, 8))
 
-df_pivot = df_reset.pivot(index='ano', columns='uf', values='valor')
+      bar_width = 0.35
+      bar_positions = np.arange(len(df_pivot.columns))
 
+      for i, state in enumerate(df_pivot.columns):
+         ax.bar(bar_positions[i], df_pivot.loc[year, state], width=bar_width, label=state, color=colors(i))
 
-# Generate distinct colors for each state
-colors = plt.cm.get_cmap('tab20', len(df_pivot.columns))
+      ax.set_xlabel('Estado') #cria o gráfico
+      ax.set_ylabel('Valor')
+      ax.set_title(f'Valores por Estado no ano: {year}')
+      ax.set_xticks(bar_positions)
+      ax.set_xticklabels(df_pivot.columns, rotation=90)
+      ax.legend(title='UF', bbox_to_anchor=(1.05, 1), loc='upper left')
 
-# Plot using Matplotlib with custom bar positions
-fig, ax = plt.subplots(figsize=(14, 8))
+      #salva o gráfico num arquivo
+      plt.savefig(f'estado_valores_plot_{year}.png', bbox_inches='tight')
+      plt.close()
 
-bar_width = 0.1
-bar_positions = np.arange(len(df_pivot.index))
-
-for i, state in enumerate(df_pivot.columns):
-    ax.bar(bar_positions + i * bar_width, df_pivot[state], width=bar_width, label=state, color=colors(i))
-
-# Add labels and title
-ax.set_xlabel('Ano')
-ax.set_ylabel('Valor')
-ax.set_title('Valores por Estado e Ano')
-ax.set_xticks(bar_positions + bar_width * (len(df_pivot.columns) - 1) / 2)
-ax.set_xticklabels(df_pivot.index)
-ax.legend(title='UF', bbox_to_anchor=(1.05, 1), loc='upper left')
-
-# Save the plot to a file
-plt.savefig('estado_valores_plot.png', bbox_inches='tight')
+plot_graphs_by_year(avg_homicide_rate_per_state_and_years)
