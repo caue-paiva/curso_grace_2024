@@ -1,0 +1,35 @@
+body {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    height: 100%;
+    margin: 0;
+    background-color: antiquewhite
+}
+
+#titulo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 54px;
+    margin-right: 54px;
+    margin-top: 60px;
+    color: brown;
+    font-weight: bold;
+    font-size: 30px;
+    background-color: aquamarine
+}
+
+#imagem {
+    max-width: 59%;
+    width: auto;
+    height: auto;
+    margin: 57px;
+}
+
+#lista {
+    margin-left: 60px;
+    margin-right: 60px;
+    color: brown;
+    border: solid;
+    background-color: aquamarine
+}

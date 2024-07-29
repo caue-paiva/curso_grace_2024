@@ -1,0 +1,10 @@
+O aluno Aluno1 foi Aprovado
+O aluno Aluno2 foi Reprovado
+O aluno Aluno3 foi Aprovado
+O aluno Aluno4 foi Aprovado
+O aluno Aluno5 foi Aprovado
+O aluno Aluno6 foi Aprovado
+O aluno Aluno7 foi Aprovado
+O aluno Aluno8 foi Aprovado
+O aluno Aluno9 foi Aprovado
+O aluno Aluno10 foi Aprovado
