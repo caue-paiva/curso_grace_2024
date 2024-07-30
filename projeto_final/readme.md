@@ -2,7 +2,7 @@
 
 ## Análise de Dados da Série Histórica do IPEA Mapa Da Violência.
 
-Esse projeto implementa um script em Python para análise de dados e geração de **gráficos** a partir dos dados do **IPEA** (Instituto de Pesquisas Econômicas Aplicadas) e de sua base do "Mapa da Violência", permitindo analisar dados como Taxa de Homicídio e Suicídio com uma análise por estado e por gênero.
+Esse projeto implementa um script em Python para análise de dados e geração de **gráficos** a partir dos dados do **IPEA** (Instituto de Pesquisas Econômicas Aplicadas) e de sua base do "Mapa da Violência", permitindo analisar dados como Taxa de Homicídio e Suicídio com uma análise por estado e por ano. A base também contém dados separados por gênero, permitindo uma análise da série histórica de dados sobre violência contra a mulher.
 
 A utilização do script se dá por **comandos no terminal**, no qual o usuário digita quais anos serão utilizados para a análise e qual dado/série histórica será analisado.
 
