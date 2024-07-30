@@ -46,7 +46,101 @@ class DataPoint():
    cod_munic:int
    uf:str
 
+
+def __get_api_response(time_series:TimeSeries)->list[dict]:
+   """
+   Faz uma request à API do IPEA atlas da violência dado um série histórica passada como argumento.
+
+   Args:
+      time_series (TimeSeries): Objeto que dita qual dado/série histórica será buscado na API
+   
+   Return:
+      (list[dict]): retorno da API, consiste em uma lista de dicionários, cada dict tem as chaves: (id,periodo,valor,cod)
+   """
+   
+   id:int = time_series.value["id"]
+   SERIES_URL = f"api/v1/valores-series/{id}/4" #20 é o id do tema de taxa de homicídios e 4 é a abrangencia dos dados para cada município
+   path = BASE_URL + SERIES_URL
+   response = requests.get(path)
+   if response.status_code != 200:
+         raise RuntimeError(f"Falha na request, erro: {response.status_code}")
+   response.encoding = 'utf-8'
+   return response.json()
+
+def __get_state_from_city_code(df:pd.DataFrame,city_code:int)->str:
+   """
+   Dado um df com os estados associados a cada código de município (df que veio do CSV do IBGE sobre municípios),
+   e um código de cidade, retorna o nome do estado desse município.
+
+   Args:
+      df (pd.DataFrame): df do pandas com os nomes dos estados associados a cada código do município de um dado
+      city_code (int): código do município
+   
+   Return:
+      (str): nome do estado em que o município do código se localiza 
+   """
+   try:
+      state:str = df.loc[city_code]["nome_uf"]
+      return state
+   except Exception as e:
+        print(f"Erro durante a busca da UF pelo código do município: {e}")
+        return ""
+
+def __parse_api_results(api_response:list[dict], city_info_df:pd.DataFrame)->list[DataPoint]:
+   """
+   Faz um parsing no resultado da API do IPEA e retorna uma lista de objetos DataPoint
+
+   Args:
+      api_response (list[dict]): resposta da API do IPEA
+      city_info_df (pd.DataFrame): df do pandas com os nomes dos estados associados a cada código do município de um dado
+
+   Return:
+      (list[DataPoint]): lista de objetos DataPoint, cada um contendo um dado, de um ano em uma cidade (com o nome do estado tbm)
+   """
+   
+   parse_dates_to_years = lambda x : x[:x.find("-")]
+   dict_to_datapoint =  lambda x: DataPoint(
+      valor=float(x["valor"]),
+      ano= int(parse_dates_to_years(x["periodo"])),  
+      cod_munic=int(x["cod"]),
+      uf = __get_state_from_city_code(city_info_df,int(x["cod"]))
+   )
+   return list(map(dict_to_datapoint,api_response))
+
+def __map_num_to_time_series(time_series_num:int)->TimeSeries | None:
+   """
+   Dado um inteiro, mapea esse inteiro para um objeto do enum TimeSeries.
+   
+   Args:
+      time_series_num (int): número que representa o dado/série histórica.
+
+   Return:
+      (TimeSeries | None): Retorna um objeto TimeSeries se achar o número correspondente, senão retorna None.
+   """
+   match (time_series_num):
+      case 1:
+         return TimeSeries.HOMICIDE_RATE
+      case 2:
+         return TimeSeries.FEMALE_HOMICIDE_RATE
+      case 3:
+         return TimeSeries.SUICIDE_RATE
+      case 4:
+         return TimeSeries.FEMALE_SUICIDE_RATE
+      
+   return None
+
 def print_available_time_series()->None:
+   """
+   Printa no terminal todas as séries históricas da API IPEA Atlas da Violência e seus IDs correspondentes.
+   Essa lista é apenas para séries no tema geral de Violência, esses temas são ditados pela API e pelo sistema do 
+   IPEA
+
+   Args:
+      (None)
+   Return:
+      (None)
+   """
+   
    TIME_SERIES_INFO_URL = "api/v1/series/0" #url para pegar todas as séries no tema de homicídios
    path = BASE_URL + TIME_SERIES_INFO_URL
    response = requests.get(path)
@@ -60,35 +154,19 @@ def print_available_time_series()->None:
       id: int = series["id"]
       print(f"Nome Série: {nome_series}, Id: {id}")
 
-def get_api_response(time_series:TimeSeries)->list[dict]:
-   id:int = time_series.value["id"]
-   SERIES_URL = f"api/v1/valores-series/{id}/4" #20 é o id do tema de taxa de homicídios e 4 é a abrangencia dos dados para cada município
-   path = BASE_URL + SERIES_URL
-   response = requests.get(path)
-   if response.status_code != 200:
-         raise RuntimeError(f"Falha na request, erro: {response.status_code}")
-   response.encoding = 'utf-8'
-   return response.json()
-
-def get_state_from_city_code(df:pd.DataFrame,city_code:int)->str:
-   try:
-      state:str = df.loc[city_code]["nome_uf"]
-      return state
-   except Exception as e:
-        print(f"Erro durante a busca da UF pelo código do município: {e}")
-        return ""
-
-def parse_api_results(api_response:list[dict], city_info_df:pd.DataFrame)->list[DataPoint]:
-   parse_dates_to_years = lambda x : x[:x.find("-")]
-   dict_to_datapoint =  lambda x: DataPoint(
-      valor=float(x["valor"]),
-      ano= int(parse_dates_to_years(x["periodo"])),  
-      cod_munic=int(x["cod"]),
-      uf = get_state_from_city_code(city_info_df,int(x["cod"]))
-   )
-   return list(map(dict_to_datapoint,api_response))
-
 def plot_graphs_by_year(df:pd.DataFrame, time_series:TimeSeries)->None:
+   """
+   Dado um df agrupado por ano e estado e o dado/série histórica que será extraido(a), gera gráficos (cada um para um ano) dos dados
+   presentes no df.
+
+   Args:
+      df (pd.DataFrame): df do pandas agrupado por ano e estado
+      time_series (TimeSeries): objeto que representa a qual série histórica os gráficos pertencem
+   
+   Return:
+      (None): Nenhum retorno
+   """
+  
    df_reset = df.reset_index() #reset no index para plotar os gráficos
    df_pivot = df_reset.pivot(index='ano', columns='uf', values='valor')
    colors = plt.colormaps.get_cmap('tab20')
@@ -115,33 +193,44 @@ def plot_graphs_by_year(df:pd.DataFrame, time_series:TimeSeries)->None:
       plt.close()
 
 def get_grouped_dataframe(list_of_years:list[int], time_series:TimeSeries)->pd.DataFrame:
-   df = pd.read_csv(os.path.join("info_municipios_ibge.csv"),usecols=["nome_uf","codigo_municipio"])
+   """
+   Dado uma lista de anos e a série histórica a ser analisada, faz a request API e retorna um DF do pandas agrupado (group_by) pelo estado e ano
+   e com uma coluna representando a média dos valores para cada combinação de colunas do group_by.
+
+   Args:
+      list_of_years (list[int]): lista de anos nos dados que serão analizados
+      time_series (TimeSeries): objeto time series que dita qual dado/série histórica será analizada
+   
+   Return:
+      (pd.Dataframe): Dataframe do pandas agrupado por estado e ano e com a média dos valores
+   """
+   CSV_CITY_INFO_PATH = "info_municipios_ibge.csv" #arquivo csv extraido do IBGE com informações sobre cidades do Brasil
+   
+   df = pd.read_csv(os.path.join(CSV_CITY_INFO_PATH),usecols=["nome_uf","codigo_municipio"])
    df.set_index('codigo_municipio', inplace=True)
    df.index = df.index.astype(int)
 
-   api_response = get_api_response(time_series)
-   data_points = parse_api_results(api_response,df)
+   api_response = __get_api_response(time_series)
+   data_points = __parse_api_results(api_response,df)
    final_df = pd.DataFrame(data_points)
    final_df =final_df.drop(["cod_munic"],axis="columns")
    final_df = final_df[ final_df["ano"].apply(lambda x: x in list_of_years)]
 
    group_by_state_and_year = final_df.groupby(["uf","ano"])
    return group_by_state_and_year.mean()
- 
-def __map_num_to_time_series(time_series_num:int)->TimeSeries | None:
-   match (time_series_num):
-      case 1:
-         return TimeSeries.HOMICIDE_RATE
-      case 2:
-         return TimeSeries.FEMALE_HOMICIDE_RATE
-      case 3:
-         return TimeSeries.SUICIDE_RATE
-      case 4:
-         return TimeSeries.FEMALE_SUICIDE_RATE
-      
-   return None
 
 def get_user_input()->tuple[list[int],TimeSeries]:
+   """
+   Lê o input do usuário sobre o dado que será analisado da API "Ipea Mapa da violência" e qual os anos que serão
+   analisados.
+   
+   Args:
+      (None)
+      
+   Return:
+      (tuple[list[int],TimeSeries]): uma tupla com a lista dos anos a serem analizados e um objeto TimeSeries, que representa o dado a ser analizado
+   """
+   
    print("Olá, este programa utiliza a API do IPEA para buscar dados sobre a série histórica de taxa de homicídios em estados brasileiros \n")
    OLDEST_YEAR_IN_SERIES: int = 1989
    MOST_RECENT_YEAR_IN_SERIES:int = 2022
