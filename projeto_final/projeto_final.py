@@ -4,11 +4,8 @@ from dataclasses import dataclass
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-#taxa de homi: id 20 (id para os dados na API)
-#num homi: id 328
 
-BASE_URL:str = "https://www.ipea.gov.br/atlasviolencia/"
-
+BASE_URL:str = "https://www.ipea.gov.br/atlasviolencia/" #url básico da API
 
 class TimeSeries(Enum):
    """
@@ -32,7 +29,6 @@ class TimeSeries(Enum):
       "name": "taxa de suicídio de mulheres",
       "id": 52
    }
-
 
 @dataclass
 class DataPoint():
@@ -80,7 +76,7 @@ def __get_state_from_city_code(df:pd.DataFrame,city_code:int)->str:
       (str): nome do estado em que o município do código se localiza 
    """
    try:
-      state:str = df.loc[city_code]["nome_uf"]
+      state:str = df.loc[city_code]["nome_uf"] #acessa o a linha e dps a coluna no dataframe
       return state
    except Exception as e:
         print(f"Erro durante a busca da UF pelo código do município: {e}")
@@ -98,14 +94,14 @@ def __parse_api_results(api_response:list[dict], city_info_df:pd.DataFrame)->lis
       (list[DataPoint]): lista de objetos DataPoint, cada um contendo um dado, de um ano em uma cidade (com o nome do estado tbm)
    """
    
-   parse_dates_to_years = lambda x : x[:x.find("-")]
-   dict_to_datapoint =  lambda x: DataPoint(
+   parse_dates_to_years = lambda x : x[:x.find("-")] #função que transforma a string YYYY-MM-DD em uma string YYYY
+   dict_to_datapoint =  lambda x: DataPoint( #função transforma um dict que veio da API em um objeto DataPoint
       valor=float(x["valor"]),
       ano= int(parse_dates_to_years(x["periodo"])),  
       cod_munic=int(x["cod"]),
       uf = __get_state_from_city_code(city_info_df,int(x["cod"]))
    )
-   return list(map(dict_to_datapoint,api_response))
+   return list(map(dict_to_datapoint,api_response)) #aplica a função dict_to_datapoint em cada elemento da lista
 
 def __map_num_to_time_series(time_series_num:int)->TimeSeries | None:
    """
@@ -117,7 +113,7 @@ def __map_num_to_time_series(time_series_num:int)->TimeSeries | None:
    Return:
       (TimeSeries | None): Retorna um objeto TimeSeries se achar o número correspondente, senão retorna None.
    """
-   match (time_series_num):
+   match (time_series_num): #associa cada número a um objeto TimeSeries
       case 1:
          return TimeSeries.HOMICIDE_RATE
       case 2:
@@ -149,10 +145,10 @@ def print_available_time_series()->None:
    response.encoding = 'utf-8'
    series_list = response.json()
    
-   for series in series_list:
+   for series in series_list: #loop por cada série histórica 
       nome_series: str = series["titulo"]
       id: int = series["id"]
-      print(f"Nome Série: {nome_series}, Id: {id}")
+      print(f"Nome Série: {nome_series}, Id: {id}") #print nas informações
 
 def plot_graphs_by_year(df:pd.DataFrame, time_series:TimeSeries)->None:
    """
@@ -206,18 +202,19 @@ def get_grouped_dataframe(list_of_years:list[int], time_series:TimeSeries)->pd.D
    """
    CSV_CITY_INFO_PATH = "info_municipios_ibge.csv" #arquivo csv extraido do IBGE com informações sobre cidades do Brasil
    
-   df = pd.read_csv(os.path.join(CSV_CITY_INFO_PATH),usecols=["nome_uf","codigo_municipio"])
-   df.set_index('codigo_municipio', inplace=True)
+   df = pd.read_csv(os.path.join(CSV_CITY_INFO_PATH),usecols=["nome_uf","codigo_municipio"]) #le o csv das informações do municípoo
+   df.set_index('codigo_municipio', inplace=True) # código do município vira o index
    df.index = df.index.astype(int)
 
-   api_response = __get_api_response(time_series)
-   data_points = __parse_api_results(api_response,df)
-   final_df = pd.DataFrame(data_points)
-   final_df =final_df.drop(["cod_munic"],axis="columns")
-   final_df = final_df[ final_df["ano"].apply(lambda x: x in list_of_years)]
+   api_response:list[dict] = __get_api_response(time_series) #chama a api
+   data_points:list[DataPoint] = __parse_api_results(api_response,df) #processa o resultado
+   final_df = pd.DataFrame(data_points) #cria um df com a lista de datapoints com a coluna de estado
+   
+   final_df =final_df.drop(["cod_munic"],axis="columns") #coluna de codigo do município não é mais necessária
+   final_df = final_df[ final_df["ano"].apply(lambda x: x in list_of_years)] #filtra o df para ter apenas os anos especificados
 
-   group_by_state_and_year = final_df.groupby(["uf","ano"])
-   return group_by_state_and_year.mean()
+   group_by_state_and_year = final_df.groupby(["uf","ano"]) #faz um groupby nas colunas de uf (estado) e ano
+   return group_by_state_and_year.mean() #calcula a média da coluna de valores de cada agrupamento
 
 def get_user_input()->tuple[list[int],TimeSeries]:
    """
@@ -232,19 +229,19 @@ def get_user_input()->tuple[list[int],TimeSeries]:
    """
    
    print("Olá, este programa utiliza a API do IPEA para buscar dados sobre a série histórica de taxa de homicídios em estados brasileiros \n")
-   OLDEST_YEAR_IN_SERIES: int = 1989
+   OLDEST_YEAR_IN_SERIES: int = 1989 #constantes para os anos de início e fim das séries históricas
    MOST_RECENT_YEAR_IN_SERIES:int = 2022
    years_list:list[int]
    
    while True:
       anos:str = input("Digite os anos dos dados que serão analizados, cada um com espaço: ")
-      years:list[str] = anos.split(" ")
+      years:list[str] = anos.split(" ") #separa o input no espaço
 
       if not years:
          print("Nenhum ano foi digitado\n")
          continue
       try:
-         years_list = list(map(lambda x: int(x),years))
+         years_list = list(map(lambda x: int(x),years)) #transforma strings de números em ints
          if any([x < OLDEST_YEAR_IN_SERIES for x in years_list] ):
             print("Ano mais antigo na série histórica é 1989, digite um ano igual o mais recente\n")
             continue
@@ -256,10 +253,10 @@ def get_user_input()->tuple[list[int],TimeSeries]:
          print("Numeros colocados com sucesso!")
          break
       except:
-         continue
+         continue #continua loop
 
    while True:
-      data_series: str = input(
+      data_series: str = input( #pega input do usuário sobre qual dado será analisado
       """
       Digite o número do dado que será analisado: 
       1: Taxa de Homicídio \n
@@ -269,21 +266,21 @@ def get_user_input()->tuple[list[int],TimeSeries]:
       """
       )
       try:
-         series_num:int = int(data_series)
-         series:TimeSeries|None = __map_num_to_time_series(series_num)
+         series_num:int = int(data_series) #transforma string em int
+         series:TimeSeries|None = __map_num_to_time_series(series_num) #acha qual objeto do Enum TimeSeries corresponde ao número
          if series is None:
-            raise Exception #falha ao acha a série histórica a partir do número digitado, continua o loop
+            raise Exception #falha ao achar a série histórica a partir do número digitado, continua o loop
 
          return years_list, series #retona uma tupla com os anos da análise e qual o dado que será analizado
       except:
-         print("falha ao entrar o dado buscado, tente de novo")
+         print("falha ao entrar o dado buscado, tente de novo") #continua loop
 
 if __name__ == "__main__":
-   years_list, time_series = get_user_input()
-   avg_homicide_rate_per_state_and_years = get_grouped_dataframe(years_list,time_series)
+   years_list, time_series = get_user_input() #pega input do usuário
+   avg_homicide_rate_per_state_and_years = get_grouped_dataframe(years_list,time_series) #gera dataframe com os dados da API
    print("Gerando gráficos")
-   plot_graphs_by_year(avg_homicide_rate_per_state_and_years,time_series)
+   plot_graphs_by_year(avg_homicide_rate_per_state_and_years,time_series) #gera os gráficos
    print("Gráficos gerados com sucesso")
  
-   #print_available_time_series()
+   #print_available_time_series()  #caso o usuário queira ver todas as śeries históricas disponíveis é só chamar essa função
  
