@@ -50,6 +50,8 @@ pip install -r requirements.txt
 python3 projeto_final.py
 ```
 
+5) Escolher os anos e a série histórica a ser analisada, por meio de inputs no terminal.
+
 ### Arquivo Auxiliar
 O arquivo "info_municipios_ibge.csv" é um csv extraido das bases do IBGE contendo informações sobre os municípios do Brasil. Ele é necessário pois a API do IPEA apenas retorna o código do município dos dados coletados, portanto é necessário mapear cada código ao seu estado para permitir uma agregação e análise pelos estados.
 
