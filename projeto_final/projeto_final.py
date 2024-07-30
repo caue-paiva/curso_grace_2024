@@ -33,8 +33,8 @@ class TimeSeries(Enum):
 @dataclass
 class DataPoint():
    """
-   o decorator dataclass gera automaticamente métodos padrões (__init__ entre outros) para a classe e indicada que a
-   classe tem o propósito principal de armazenar dados de forma estruturada. Essa classe representa os dados sobre a taxa de homicídio em um município
+   o decorator dataclass gera automaticamente métodos padrões (__init__ entre outros) para a classe e indica que a
+   classe tem o propósito principal de armazenar dados de forma estruturada. Essa classe representa os dados sobre uma série histórica em um município.
    com todos os campos que serão necessários para transformar ele em um dataframe para análises nos dados.
    """
    valor:float
