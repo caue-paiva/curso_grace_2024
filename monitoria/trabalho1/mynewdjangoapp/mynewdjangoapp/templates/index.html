@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mundo Entre Linhas</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+          <img src="/static/logo.jpeg" alt="logoheader" class="logo"> 
+        </div>
+    </header>
+
+    <!-- Slider -->
+    <section class="slider">
+        <div class="slider-content">
+          <input type="radio" name="btn-radio" id="radio1"> 
+          <input type="radio" name="btn-radio" id="radio2">
+          <input type="radio" name="btn-radio" id="radio3">
+    
+          <div class="slide-box primeiro">
+            <img class="img-desktop" src="/static/slide1.jpeg" alt="slide 1">
+            <img class="img-mobile" src="/static/slide1.jpeg" alt="slide 1">
+          </div>
+    
+          <div class="slide-box">
+            <img class="img-desktop" src="/static/slide2.jpeg" alt="slide 2">
+            <img class="img-mobile" src="/static/slide2.jpeg" alt="slide 2">
+          </div>
+
+          <div class="slide-box">
+            <img class="img-desktop" src="/static/slide3.jpeg" alt="slide 3">
+            <img class="img-mobile" src="/static/slide3.jpeg" alt="slide 3">
+          </div>
+    
+          <div class="nav-auto">
+            <div class="auto-btn1"></div>
+            <div class="auto-btn2"></div>
+            <div class="auto-btn3"></div>
+          </div>
+    
+          <div class="nav-manual">
+            <label for="radio1" class="manual-btn"></label>
+            <label for="radio2" class="manual-btn"></label>
+            <label for="radio3" class="manual-btn"></label>
+          </div>
+        </div>
+    </section>
+
+    <div class="container">
+
+<!-- Primeiro livro -->
+<div class="book">
+    <!--se a capa for clicada, levará para o site de compra do livro-->
+    <a href="https://www.amazon.com.br/telefone-preto-outras-histórias/dp/6555113049"><img src="/static/telefonepreto.jpeg" alt="Capa do livro Telefone Preto"></a>
+    <div class="book-content">
+        <h2 class="book-title">Telefone Preto</h2>
+        <p class="book-description">
+            <h4>SINOPSE:</h4>
+            Todas as vezes em infância de espaço confinado em que Finney, um garoto de 13 anos, é atraído e sequestrado por um 
+            serial killer de propensões assustadoras. 
+            <div id="aparecer">em seguida, é praticamente abandonado sem comida e sem água no porão de uma casa. Ele encontra um telefone preto que, de alguma 
+            forma, conecta-o com as vítimas anteriores do assassino, que tentam ajudá-lo a escapar.</div> 
+        </p>
+        <button class="read-more" onclick='minhafuncao()'>Ler mais</button>
+        <div class="stars">&#9733; &#9733; &#9733; &#9733; &#9734;</div>
+    </div>
+</div>
+    
+        <!-- Segundo livro -->
+        <div class="book">
+            <a href="https://www.amazon.com.br/castelo-animado-Diana-Wynne-Jones/dp/655587208X/ref=sr_1_2?__mk_pt"><img src="/static/casteloanimado.jpeg" alt="Capa do livro Castelo Animado"></a>
+            <div class="book-content">
+                <h2 class="book-title">O Castelo Animado</h2>
+                <p class="book-description">
+                    <h4>SINOPSE:</h4>
+                    O Castelo Animado é um livro de Diana Wynne Jones que conta a história de Sophie, uma jovem que é amaldiçoada por uma bruxa e transformada 
+                    em uma senhora de 90 anos. 
+                    <div id="aparecer2"> se livrar do feitiço, Sophie foge e acaba trabalhando no castelo do Mago Howl, onde conhece Calcifer, 
+                    o demônio do fogo, e Marko, o aprendiz de mago.</div>
+                </p>
+                <button class="read-more" onclick='minhafuncao2()'>Ler mais</button>
+                <div class="stars">&#9733; &#9733; &#9733; &#9733; &#9734;</div>
+            </div>
+        </div>
+    
+        <!-- Terceiro livro -->
+        <div class="book">
+            <a href="https://www.amazon.com.br/Blue-Period-01-Tsubasa-Yamaguchi/dp/6559602362/ref=sr_1_1?__mk_pt_BR=ÅMÅŽÕÑ&crid=1PKR5X9047O32&dib=eyJ2IjoiMSJ9.WCD0E3pvDDvKgxw4-TXC73zASiVIJ6T1VCTf5yoLGCp9H10hzMuLD1NZ-5-5x712MtaYkLrgNeWQ0UhSmyHdsG38QAn6m0FHOgrUMXP6Ocwp1YrwMhMLoOUlRXV0T7yeCOhMwTk9bQAROR67lEVx5s80EZBHkf5rt0gGT2X7vzw3GJbRVsu6UXF9WTmWgLpN8bYvylc_jlqHilhYJNuTN35uVh21xsswO9jITtutCAM.TV5rBycCWVq-ndgTcoxW9YYUxNaX05kLuf0v2FCGWV4&dib_tag=se&keywords=livro+blue+period+1&qid=1734134496&s=books&sprefix=livro+blue+period+1+portugues%2Cstripbooks%2C187&sr=1-1"><img src="/static/blueperiod.jpeg" alt="Capa do livro Blue Period"></a>
+            <div class="book-content">
+                <h2 class="book-title">Blue Period</h2>
+                <p class="book-description">
+                    <h4>SINOPSE:</h4>
+                    O estudante do ensino médio que descobriu o prazer de pintar e decide prestar o vestibular para uma faculdade de artes, Yatora Yaguchi. 
+                    <div id="aparecer3">em tudo, tanto para fazer amigos como nos estudos, Yatora é um rapaz que gosta de curtir a vida sem se comprometer seriamente.</div>
+                </p>
+                <button class="read-more" onclick='minhafuncao3()'>Ler mais</button>
+                <div class="stars">&#9733; &#9733; &#9733; &#9733; &#9734;</div>
+            </div>
+        </div>
+    
+        <!-- Quarto livro -->
+        <div class="book">
+            <a href="https://www.amazon.com.br/mec%C3%A2nica-amor-Alexene-Farol-Follmuth/dp/6588131992"><img src="/static/amecanicadoamor.jpeg" alt="Capa do livro A Mecânica do Amor"></a>
+            <div class="book-content">
+                <h2 class="book-title">A Mecânica do Amor</h2>
+                <p class="book-description">
+                    <h4>SINOPSE:</h4>
+                    Bel não sabe o que fazer quando se formar no colégio e nem quer pensar no assunto. Mas quando revela um talento 
+                    especial para engenharia, é incentivada por uma professora a entrar para o clube de robótica da escola. 
+                    <div id="aparecer4">O problema é que o clube é comandado por Teo, que além de gato e popular, ainda é mega inteligente e já tem cada passo 
+                    do seu brilhante futuro bem planejado.</div>
+                </p>
+                <button class="read-more" onclick='minhafuncao4()'>Ler mais</button>
+                <div class="stars">&#9733; &#9733; &#9733; &#9733; &#9734;</div>
+            </div>
+        </div>
+    
+        <!-- Quinto livro -->
+        <div class="book">
+            <a href="https://a.co/d/5ljoJOd"><img src="/static/melhordoquenosfilmes.jpeg" alt="Capa do livro Melhor do que nos Filmes"></a>
+            <div class="book-content">
+                <h2 class="book-title">Melhor do que nos Filmes</h2>
+                <p class="book-description">
+                    <h4>SINOPSE:</h4>
+                    Elizabeth Buxbaum sempre soube que seu vizinho não seria um bom namorado. Apesar de todos acharem Wesley Bennett 
+                    simpático e muito bonito, Liz tinha certeza de que, na verdade, ele era um chato de galochas.
+                    Mas Michael Young era diferente. 
+                    <div id="aparecer5">O amor de infância de Liz estava à altura dos protagonistas das comédias românticas
+                    que ela tanto gostava, só que havia se mudado para longe quando os dois ainda eram crianças. Dez anos depois, ele 
+                    estava de volta, mais lindo e charmoso do que nunca.</div> 
+                </p>
+                <button class="read-more" onclick='minhafuncao5()'>Ler mais</button>
+                <div class="stars">&#9733; &#9733; &#9733; &#9733; &#9734;</div>
+            </div>
+        </div>
+    
+        <!-- Sexto livro -->
+        <div class="book">
+            <a href="https://a.co/d/6ehi3Gd"><img src="/static/imperfeitos.jpeg" alt="Capa do livro Imperfeitos"></a>
+            <div class="book-content">
+                <h2 class="book-title">Imperfeitos</h2>
+                <p class="book-description">
+                    <h4>SINOPSE:</h4>
+                    Olive se sente como a gêmea azarada da casa: dos acidentes estranhamente inexplicáveis ao fracasso na vida profissional 
+                    e amorosa ― nada dá certo para ela. Porém, parece que o jogo vira quando sua alergia a frutos do mar a protege de um 
+                    desastre, já que todos os convidados da festa de casamento da irmã sofrem com intoxicação alimentar.
+                    <div id="aparecer6">Na verdade... nem todos. Ethan, o irmão do noivo, também ficou de fora desse pesadelo.</div>
+                </p>
+                <button class="read-more" onclick='minhafuncao6()'>Ler mais</button>
+                <div class="stars">&#9733; &#9733; &#9733; &#9733; &#9734;</div>
+            </div>
+        </div>
+    
+    </div>    
+
+   <footer>
+     MUNDO ENTRE LINHAS - GIOVANNA VENTURINI E ISABELLE MILENA P RODRIGUES
+   </footer>
+
+   <script>
+
+    function minhafuncao() {
+        var x = document.getElementById("aparecer");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+      }
+
+    function minhafuncao2() {
+        var x = document.getElementById("aparecer2");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+      }
+
+    function minhafuncao3() {
+        var x = document.getElementById("aparecer3");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+      }
+
+    function minhafuncao4() {
+        var x = document.getElementById("aparecer4");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+      }
+
+    function minhafuncao5() {
+        var x = document.getElementById("aparecer5");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+      }
+
+    function minhafuncao6() {
+        var x = document.getElementById("aparecer6");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+      }
+
+   </script>
+
+</body>
+</html>

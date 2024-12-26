@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Akshar:wght@300..700&family=Geist+Mono:wght@100..900&display=swap');
+
+::-webkit-scrollbar {
+    display: none; /* Remove a barra de rolagem */
+}
+
+body {
+    font-family: 'Akshar', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fdf5e6;
+    color: #333;
+}
+
+header {
+    background-color: #4A1859;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 120px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+}
+
+.book {
+    display: flex;
+    align-items: flex-start;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    margin-top: 40px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.book img {
+    width: 150px;
+    height: auto;
+    margin-right: 20px;
+    border-radius: 8px;
+    transition: 500ms linear;
+}
+
+.book img:hover{top:1px; box-shadow: 5px 5px 5px #FFA100}
+
+
+.book-content {
+    flex: 1;
+}
+
+.book-title {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #4A1859;
+}
+
+.book-description {
+    font-size: 1em;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.book:hover{top:1px; box-shadow: 5px 5px 5px #8d8d8d}
+
+.read-more {
+    border: none;
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4A1859;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.read-more:hover {
+    background-color: #FFA100;
+}
+
+.stars {
+    color: #FFA100;
+    font-size: 1.2em;
+    margin-top: 10px;
+}
+
+
+h4 {
+    color: #FFA100;
+}
+
+P {
+    color:rgb(0, 0, 0)0;
+}
+
+.logo {
+    max-height: 100%; /* Garante que a logo não exceda a altura do header */
+    height: 300px; /* Tamanho inicial da logo */
+    width: auto; /* Mantém as proporções da imagem */
+}
+
+.btn-aumentar {
+    width: 100%;
+    padding-left: 10px;
+}
+
+.btn-aumentar > i {
+    color: rgb(255, 255, 255);
+    font-size: 40px;
+    cursor: pointer;
+    text-shadow: 0 0 0.5em  #ffffff;
+}
+
+/* slider */
+
+section.slider{
+    margin-top: 10px;
+    margin-bottom: 30px;
+    width: 100%;
+    height: auto;
+    overflow: hidden;   
+}
+
+.slider-content {
+    width: 400%;
+    height: auto;
+    display: flex;
+}
+
+.slider-content input, .img-mobile{
+    display: none; 
+}
+
+.slide-box {
+    width: 25%;
+    height: auto;
+    position: relative;
+    transition: 1s;
+} 
+
+.slide-box img {
+    width: 100%;
+    height: 400px; 
+}
+
+.nav-manual, .nav-auto {
+    position: absolute;
+    width: 100%;
+    margin-top: 31%;
+    margin-left: 45%;
+    display: flex;
+    float: center;
+}
+
+.nav-manual .manual-btn, .nav-auto div{
+    border: 2px solid #4A1859;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.nav-manual .manual-btn:not(:last-child), .nav-auto div:not(:last-child){
+    margin-right: 10px;
+}
+
+.nav-manual .manual-btn:hover {
+    background-color: #FFA100;
+}
+
+#radio1:checked ~ .nav-auto .auto-btn1 {
+    background-color: #FFA100;
+}
+
+#radio2:checked ~ .nav-auto .auto-btn2 {
+    background-color: #FFA100;
+}
+
+#radio3:checked ~ .nav-auto .auto-btn3 {
+    background-color: #FFA100;
+}
+
+#radio1:checked ~ .primeiro{
+    margin-left: 0%;   
+}
+
+#radio2:checked ~ .primeiro{
+    margin-left: -25%;   
+}
+
+#radio3:checked ~ .primeiro{
+    margin-left: -50%;   
+}
+
+/* end of the slider */
+
+footer {
+    background-color: #4A1859;
+    color: #fdf5e6;
+    width: 100%;
+    height: 5%;
+    text-align:center;	    
+ }
